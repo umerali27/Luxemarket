@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
+  <title>LuxeMarket User</title>
+
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css"/>
+
+  <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+
+    body{
+      font-family:Arial,sans-serif;
+      background:#f5f5f5;
+      color:#111;
+    }
+
+    /* NAVBAR */
+
+    .navbar{
+      background:#fff;
+      padding:18px 50px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      box-shadow:0 2px 15px rgba(0,0,0,0.05);
+    }
+
+    .logo{
+      font-size:28px;
+      font-weight:bold;
+    }
+
+    .logo span{
+      color:#c47f1a;
+    }
+
+    .nav-links{
+      display:flex;
+      gap:25px;
+    }
+
+    .nav-links a{
+      text-decoration:none;
+      color:#555;
+      font-weight:500;
+      transition:0.2s;
+    }
+
+    .nav-links a:hover{
+      color:#c47f1a;
+    }
+
+    /* HERO */
+
+    .hero{
+      background:linear-gradient(135deg,#1a1a2e,#2f2f55);
+      color:white;
+      padding:70px 30px;
+      text-align:center;
+    }
+
+    .hero h1{
+      font-size:50px;
+      margin-bottom:18px;
+    }
+
+    .hero span{
+      color:#c47f1a;
+    }
+
+    .hero p{
+      color:#ccc;
+      font-size:18px;
+      max-width:700px;
+      margin:auto;
+      line-height:1.6;
+    }
+
+    /* MAIN */
+
+    .main{
+      max-width:1300px;
+      margin:auto;
+      padding:50px 30px;
+    }
+
+    .section-title{
+      font-size:32px;
+      text-align:center;
+      margin-bottom:40px;
+    }
+
+    /* USER GRID */
+
+    .user-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+      gap:30px;
+    }
+
+    /* USER CARD */
+
+    .user-card{
+      background:#fff;
+      border-radius:20px;
+      overflow:hidden;
+      box-shadow:0 5px 20px rgba(0,0,0,0.08);
+      transition:0.3s;
+    }
+
+    .user-card:hover{
+      transform:translateY(-8px);
+      box-shadow:0 12px 30px rgba(0,0,0,0.15);
+    }
+
+    .user-top{
+      background:linear-gradient(135deg,#c47f1a,#e0a53a);
+      padding:30px;
+      text-align:center;
+      color:white;
+    }
+
+    .user-avatar{
+      width:90px;
+      height:90px;
+      border-radius:50%;
+      background:white;
+      color:#c47f1a;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      margin:auto;
+      font-size:40px;
+      font-weight:bold;
+      margin-bottom:15px;
+    }
+
+    .user-top h2{
+      font-size:24px;
+      margin-bottom:8px;
+    }
+
+    .user-top p{
+      opacity:0.9;
+      font-size:14px;
+    }
+
+    .user-body{
+      padding:25px;
+    }
+
+    .user-info{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:18px;
+      color:#555;
+      font-size:15px;
+    }
+
+    .user-info i{
+      color:#c47f1a;
+      font-size:20px;
+    }
+
+    .status{
+      display:inline-block;
+      padding:8px 14px;
+      border-radius:20px;
+      font-size:13px;
+      font-weight:bold;
+      background:#dcfce7;
+      color:#166534;
+    }
+
+    .loading{
+      text-align:center;
+      padding:60px;
+      font-size:20px;
+    }
+
+    footer{
+      margin-top:60px;
+      background:#fff;
+      padding:30px;
+      text-align:center;
+      border-top:1px solid #eee;
+    }
+
+    @media(max-width:768px){
+
+      .navbar{
+        padding:15px 20px;
+      }
+
+      .nav-links{
+        display:none;
+      }
+
+      .hero h1{
+        font-size:34px;
+      }
+
+      .main{
+        padding:30px 20px;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+
+  <nav class="navbar">
+
+    <div class="logo">
+      Luxe<span>Market</span>
+    </div>
+
+    <div class="nav-links">
+
+      <a href="/">Home</a>
+
+      <a href="/products">Products</a>
+
+      <a href="/users">Users</a>
+
+    </div>
+
+  </nav>
+
+  <!-- HERO -->
+
+  <section class="hero">
+
+    <h1>
+      Our Premium
+      <span>User</span>
+    </h1>
+
+    <p>
+      Manage and view you profile
+    </p>
+
+  </section>
+
+  <!-- MAIN -->
+
+  <main class="main">
+
+    <h2 class="section-title">
+      My Profile
+    </h2>
+
+    <div id="userContainer">
+
+      <div class="loading">
+        Loading users...
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+
+  <footer>
+
+    LuxeMarket · User Management Portal
+
+  </footer>
+
+  <!-- SCRIPT -->
+
+  <script>
+
+    const API = '/api';
+
+    async function loadUsers(){
+
+      try{
+
+        const res =
+          await fetch(`${API}/users`);
+
+        const data =
+          await res.json();
+
+        const users =
+          data.data || data;
+
+        renderUsers(users);
+
+      }
+      catch(err){
+
+        document
+          .getElementById('userContainer')
+          .innerHTML = `
+            <div class="loading">
+              Failed to load users
+            </div>
+          `;
+
+        console.log(err);
+
+      }
+
+    }
+
+    function renderUsers(users){
+
+      const container =
+        document.getElementById('userContainer');
+
+      if(!users.length){
+
+        container.innerHTML = `
+          <div class="loading">
+            No users found
+          </div>
+        `;
+
+        return;
+
+      }
+
+      container.innerHTML = `
+
+        <div class="user-grid">
+
+          ${users.map(user => `
+
+            <div class="user-card">
+
+              <div class="user-top">
+
+                <div class="user-avatar">
+
+                  ${
+                    user.name
+                    ? user.name.charAt(0).toUpperCase()
+                    : 'U'
+                  }
+
+                </div>
+
+                <h2>
+                  ${user.name || 'Unknown User'}
+                </h2>
+
+                <p>
+                  Customer Account
+                </p>
+
+              </div>
+
+              <div class="user-body">
+
+                <div class="user-info">
+
+                  <i class="ti ti-mail"></i>
+
+                  <span>
+                    ${user.email || 'No Email'}
+                  </span>
+
+                </div>
+
+                <div class="user-info">
+
+                  <i class="ti ti-phone"></i>
+
+                  <span>
+                    ${user.phone || 'No Phone'}
+                  </span>
+
+                </div>
+
+                <div class="user-info">
+
+                  <i class="ti ti-map-pin"></i>
+
+                  <span>
+                    ${user.address || 'No Address'}
+                  </span>
+
+                </div>
+
+                <br>
+
+                <span class="status">
+                  Active User
+                </span>
+
+              </div>
+
+            </div>
+
+          `).join('')}
+
+        </div>
+
+      `;
+
+    }
+
+    loadUsers();
+
+  </script>
+
+</body>
+
+</html>
