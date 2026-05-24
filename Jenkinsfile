@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_USER = 'umerali27'
+        DOCKER_HUB_USER = 'umerali2727'
         IMAGE_NAME      = 'luxemarket-api'
         CONTAINER_NAME  = 'luxemarket-app'
         PORT            = '3001'
