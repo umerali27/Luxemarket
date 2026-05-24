@@ -4,8 +4,6 @@ pipeline {
     environment {
         DOCKER_HUB_USER = 'umerali2727'
         IMAGE_NAME      = 'luxemarket-api'
-        CONTAINER_NAME  = 'luxemarket-app'
-        PORT            = '3001'
     }
 
     stages {
@@ -34,22 +32,19 @@ pipeline {
             }
         }
 
-        stage('Deploy Successfully') {
+        stage('Deploy to Kubernetes') {
             steps {
-                echo "Deploying container ${CONTAINER_NAME} on port ${PORT}..."
-                sh """
-                docker stop ${CONTAINER_NAME} || true
-                docker rm ${CONTAINER_NAME} || true
-                docker run -d \
-                  -p ${PORT}:${PORT} \
-                  --name ${CONTAINER_NAME} \
-                  ${DOCKER_HUB_USER}/${IMAGE_NAME}:latest
-                """
+                echo 'Deploying application to KinD Cluster...'
                 
-                echo 'Verifying container health...'
-                sh "sleep 5"
-                sh "docker ps | grep ${CONTAINER_NAME}"
-                echo 'Application deployed successfully!'
+                // Dynamically updates the manifest file to use the current unique Jenkins build tag
+                sh "sed -i 's|${DOCKER_HUB_USER}/${IMAGE_NAME}:latest|${DOCKER_HUB_USER}/${IMAGE_NAME}:${BUILD_NUMBER}|g' k8s/deployment.yaml"
+                
+                // Applies the directory containing your manifests
+                sh "kubectl apply -f k8s/"
+                
+                // Verifies that the deployment rolled out successfully without issues
+                sh "kubectl rollout status deployment/luxemarket-api-deployment"
+                echo 'Application deployed successfully to Kubernetes!'
             }
         }
     }
