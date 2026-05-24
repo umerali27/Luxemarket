@@ -9,22 +9,23 @@ pipeline {
     }
 
     stages {
-        stage('Checkout Code') {
+        stage('Git Clone') {
             steps {
+                echo 'Cloning repository from GitHub...'
                 checkout scm
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                echo 'Building the Docker image...'
+                echo "Building application Docker image: ${IMAGE_NAME}..."
                 sh "docker build -t ${DOCKER_HUB_USER}/${IMAGE_NAME}:${BUILD_NUMBER} -t ${DOCKER_HUB_USER}/${IMAGE_NAME}:latest ."
             }
         }
 
-        stage('Push to Docker Hub') {
+        stage('Push Docker Image') {
             steps {
-                echo 'Logging into Docker Hub and pushing image...'
+                echo 'Authenticating and pushing image to Docker Hub...'
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh "echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin"
                     sh "docker push ${DOCKER_HUB_USER}/${IMAGE_NAME}:${BUILD_NUMBER}"
@@ -33,9 +34,9 @@ pipeline {
             }
         }
 
-        stage('Deploy Container') {
+        stage('Deploy Successfully') {
             steps {
-                echo 'Deploying application locally from the Docker Hub image...'
+                echo "Deploying container ${CONTAINER_NAME} on port ${PORT}..."
                 sh """
                 docker stop ${CONTAINER_NAME} || true
                 docker rm ${CONTAINER_NAME} || true
@@ -44,21 +45,18 @@ pipeline {
                   --name ${CONTAINER_NAME} \
                   ${DOCKER_HUB_USER}/${IMAGE_NAME}:latest
                 """
-            }
-        }
-
-        stage('Sanity Check') {
-            steps {
-                echo 'Checking if container is running stable...'
+                
+                echo 'Verifying container health...'
                 sh "sleep 5"
                 sh "docker ps | grep ${CONTAINER_NAME}"
+                echo 'Application deployed successfully!'
             }
         }
     }
 
     post {
         always {
-            echo 'Cleaning up local images to save EC2 space...'
+            echo 'Cleaning up local workspace build layers...'
             sh "docker rmi ${DOCKER_HUB_USER}/${IMAGE_NAME}:${BUILD_NUMBER} || true"
             sh 'docker image prune -f || true'
         }
