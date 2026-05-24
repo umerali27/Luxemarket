@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: luxemarket-api-deployment
+spec:
+  replicas: 1  # Kept to 1 replica to save memory on your t3.small
+  selector:
+    matchLabels:
+      app: luxemarket-api
+  template:
+    metadata:
+      labels:
+        app: luxemarket-api
+    spec:
+      containers:
+      - name: luxemarket-api
+        image: umerali2727/luxemarket-api:latest
+        ports:
+        - containerPort: 3001
+        resources: # Limits your application from consuming too much memory
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+          requests:
+            memory: "128Mi"
+            cpu: "250m"
