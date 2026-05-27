@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: luxemarket-api-deployment
+  labels:
+    app: luxemarket-api
+spec:
+  replicas: 4 # Runs 4 copies of your app across your worker nodes
+  selector:
+    matchLabels:
+      app: luxemarket-api
+  template:
+    metadata:
+      labels:
+        app: luxemarket-api
+    spec:
+      containers:
+      - name: luxemarket-api
+        image: umerali2727/luxemarket-api:v1 # Your Docker Hub Image
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3001 # The port your Express app exposes
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: luxemarket-api-service
+spec:
+  type: ClusterIP
+  selector:
+    app: luxemarket-api
+  ports:
+    - protocol: TCP
+      port: 3001      # The port the service listens on inside the cluster
+      targetPort: 3001 # The port on your Express container
