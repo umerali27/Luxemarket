@@ -5,7 +5,7 @@ metadata:
   labels:
     app: luxemarket-api
 spec:
-  replicas: 4 # Runs 4 copies of your app across your worker nodes
+  replicas: 6 # Runs 4 copies of your app across your worker nodes
   selector:
     matchLabels:
       app: luxemarket-api
