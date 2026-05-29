@@ -20,3 +20,14 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 3001 # The port your Express app exposes
+        env:                     # <-- Add this environment variables block
+        - name: DB_HOST
+          value: "postgres-service"
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_USER
+          value: "umerali27"
+        - name: DB_PASSWORD
+          value: "ummeloiza@10"
+        - name: DB_NAME
+          value: "luxemarket"
