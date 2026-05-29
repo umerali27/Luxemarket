@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi # Requests a 1GB virtual drive from your KinD cluster
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-db
+spec:
+  replicas: 1 # Databases should generally run as 1 replica to avoid data conflicts
+  selector:
+    matchLabels:
+      app: postgres-db
+  template:
+    metadata:
+      labels:
+        app: postgres-db
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_USER
+          value: "umerali27"
+        - name: POSTGRES_PASSWORD
+          value: "ummeloiza@10"
+        - name: POSTGRES_DB
+          value: "luxemarket"
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data # Where Postgres saves its data files
+      volumes:
+      - name: postgres-storage
+        persistentVolumeClaim:
+          claimName: postgres-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+spec:
+  type: ClusterIP # Only accessible internally inside the cluster
+  selector:
+    app: postgres-db
+  ports:
+  - port: 5432
+    targetPort: 5432
