@@ -16,8 +16,7 @@ spec:
     spec:
       containers:
       - name: luxemarket-api
-        image: umerali2727/luxemarket-api:latest# Your Docker Hub Image
+        image: umerali2727/luxemarket-api:latest # Your Docker Hub Image
         imagePullPolicy: Always
         ports:
         - containerPort: 3001 # The port your Express app exposes
-
