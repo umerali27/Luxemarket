@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: luxemarket-api-service
 spec:
-  type: Nodeport
+  type: NodePort
   selector:
     app: luxemarket-api
   ports:
